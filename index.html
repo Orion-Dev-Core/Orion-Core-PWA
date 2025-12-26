@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ORION DEV CORE | LIVE</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root { --neon: #00f2ff; --bg: #0d0d0d; --panel: #1a1a1a; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        #pulse-bar { background: var(--panel); border-bottom: 2px solid var(--neon); padding: 10px 20px; display: flex; justify-content: space-between; font-family: monospace; font-size: 0.8em; }
+        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        .mic-btn { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--neon); background: transparent; color: var(--neon); font-size: 2rem; cursor: pointer; box-shadow: 0 0 15px rgba(0,242,255,0.2); transition: 0.3s; }
+        .mic-btn.active { background: var(--neon); color: black; box-shadow: 0 0 30px var(--neon); }
+        #status-text { margin-top: 20px; font-size: 1.1rem; min-height: 50px; padding: 0 20px; }
+    </style>
+</head>
+<body>
+
+<div id="pulse-bar">
+    <span>● CORE ACTIVE</span>
+    <span id="zar-display">ZAR: --</span>
+    <span id="weather-display">KZN: --</span>
+</div>
+
+<div class="main-stage">
+    <h1 style="letter-spacing: 5px; color: var(--neon);">ORION</h1>
+    <div id="status-text">Tap the mic. Speak your move.</div>
+    <button id="mic-trigger" class="mic-btn">🎙️</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
