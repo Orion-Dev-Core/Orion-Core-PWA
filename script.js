@@ -1,52 +1,55 @@
-// ORION CORE: VOICE & DATA INITIALIZATION
+
+// BOLT CORE: SECURE IDENTITY & MASTER CONTROL
+let isMaster = false;
+let BOLT_BRAIN_KEY = localStorage.getItem('bolt_brain_key');
+
 const statusText = document.getElementById('status-text');
 const micBtn = document.getElementById('mic-trigger');
 
-// 1. THE EARS: Listening to your accent (South African English)
+// 1. ADAPTIVE EARS (South African English)
 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 recognition.lang = 'en-ZA'; 
-recognition.interimResults = false;
+recognition.continuous = true;
 
-// 2. THE VOICE: Neural-style delivery
 const speak = (text) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-ZA';
-    utterance.pitch = 0.8; // Deep, authoritative tone
-    utterance.rate = 1.0; 
-    window.speechSynthesis.speak(utterance);
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-ZA'; utter.pitch = 0.8; window.speechSynthesis.speak(utter);
 };
 
-// 3. THE DATA: Live Pulse (ZAR & KZN)
-async function updatePulse() {
-    try {
-        const zarRes = await fetch('https://open.er-api.com/v6/latest/USD').then(res => res.json());
-        const weatherRes = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Durban&units=metric&appid=4772093554e2f1e29f3453880629a997').then(res => res.json());
-        
-        document.getElementById('zar-display').innerText = `ZAR: R${zarRes.rates.ZAR.toFixed(2)}`;
-        document.getElementById('weather-display').innerText = `KZN: ${Math.round(weatherRes.main.temp)}°C`;
-    } catch (e) { console.log("Pulse offline"); }
-}
-
-// 4. THE INTERACTION: Smart & Witty logic
+// 2. THE MASTER CHALLENGE
 micBtn.onclick = () => {
     recognition.start();
     micBtn.classList.add('active');
-    statusText.innerText = "Orion is listening...";
+    if(!isMaster) speak("Identity required. Bolt is locked. What is your mum's maiden name?");
 };
 
-recognition.onresult = (event) => {
-    micBtn.classList.remove('active');
-    const transcript = event.results[0][0].transcript.toLowerCase();
-    statusText.innerText = `You: "${transcript}"`;
-    
-    // Orion's Witty Learning Response
-    if(transcript.includes("zar") || transcript.includes("rand")) {
-        const msg = "The Rand is volatile, but my ROI is constant. Check the header.";
-        speak(msg);
-    } else {
-        const response = "I hear you. My Core is learning your frequency. Let's move to the next step.";
-        speak(response);
+recognition.onresult = async (event) => {
+    const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+    statusText.innerText = `HEARD: ${transcript}`;
+
+    // 3. SECURITY GATE
+    if (!isMaster && transcript.includes("proudfoot")) {
+        isMaster = true;
+        
+        if (!BOLT_BRAIN_KEY) {
+            speak("Authorization confirmed, Master. I need my brain key to initialize. Paste it into the secure field now.");
+            // Avoids autocorrect issues by using a standard prompt/input
+            const keyEntry = prompt("BOLT MASTER CONTROL: Paste Gemini API Key");
+            if(keyEntry) {
+                localStorage.setItem('bolt_brain_key', keyEntry);
+                BOLT_BRAIN_KEY = keyEntry;
+                speak("Key locked into 180-day memory. Bolt is now fully conscious.");
+            }
+        } else {
+            speak("Welcome home, Master. Bolt is live. All sensors and sales protocols active.");
+        }
+        enableSensors(); // Activates Camera & Screen Share
     }
 };
 
-updatePulse();
+async function enableSensors() {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const video = document.getElementById('core-view');
+    video.style.display = 'block';
+    video.srcObject = stream;
+}
